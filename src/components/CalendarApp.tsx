@@ -151,6 +151,17 @@ export default function CalendarApp({ currentUser }: { currentUser: string }) {
           >
             ›
           </button>
+          <input
+            type="month"
+            value={format(currentMonth, "yyyy-MM")}
+            onChange={(e) => {
+              if (!e.target.value) return;
+              const [year, month] = e.target.value.split("-").map(Number);
+              setCurrentMonth(new Date(year, month - 1, 1));
+            }}
+            aria-label="Ir para mês e ano"
+            className="rounded-lg border border-neutral-200 px-2 py-1.5 text-sm text-neutral-600 hover:bg-neutral-50"
+          />
         </div>
         <div className="order-3 hidden w-[104px] sm:block" />
       </div>
