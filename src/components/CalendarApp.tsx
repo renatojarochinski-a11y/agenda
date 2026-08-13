@@ -126,8 +126,11 @@ export default function CalendarApp({ currentUser }: { currentUser: string }) {
         </div>
       </header>
 
-      <div className="mb-3 flex items-center justify-between">
-        <div className="flex items-center gap-1">
+      <div className="mb-3 flex flex-col items-center gap-2 sm:flex-row sm:justify-between">
+        <h2 className="order-1 text-base font-medium capitalize text-neutral-700 sm:order-2 sm:text-lg">
+          {format(currentMonth, "MMMM 'de' yyyy", { locale: ptBR })}
+        </h2>
+        <div className="order-2 flex items-center gap-1 sm:order-1">
           <button
             onClick={() => setCurrentMonth((m) => subMonths(m, 1))}
             className="rounded-lg border border-neutral-200 px-2.5 py-1.5 text-sm hover:bg-neutral-50"
@@ -149,10 +152,7 @@ export default function CalendarApp({ currentUser }: { currentUser: string }) {
             ›
           </button>
         </div>
-        <h2 className="text-base font-medium capitalize text-neutral-700 sm:text-lg">
-          {format(currentMonth, "MMMM 'de' yyyy", { locale: ptBR })}
-        </h2>
-        <div className="w-[104px]" />
+        <div className="order-3 hidden w-[104px] sm:block" />
       </div>
 
       {error && (
@@ -176,27 +176,35 @@ export default function CalendarApp({ currentUser }: { currentUser: string }) {
           const dayOccurrences = occurrencesByDay.get(key) ?? [];
           const inMonth = isSameMonth(day, currentMonth);
           const today = isToday(day);
+          const hasEvents = inMonth && dayOccurrences.length > 0;
+
+          if (!inMonth) {
+            return (
+              <div
+                key={key}
+                className="min-h-[68px] border-b border-r border-neutral-100 bg-neutral-50/40 sm:min-h-[120px]"
+              />
+            );
+          }
 
           return (
             <div
               key={key}
               onClick={() => setModal({ open: true, defaultDate: day })}
-              className={`min-h-[92px] cursor-pointer border-b border-r border-neutral-100 p-1.5 transition hover:bg-rose-50/40 sm:min-h-[120px] sm:p-2 ${
-                inMonth ? "bg-white" : "bg-neutral-50/60"
+              className={`min-h-[68px] cursor-pointer border-b border-r border-neutral-100 p-1 transition hover:bg-rose-50/40 sm:min-h-[120px] sm:p-2 ${
+                hasEvents ? "bg-amber-50/70" : "bg-white"
               }`}
             >
               <div
-                className={`mb-1 inline-flex h-6 w-6 items-center justify-center rounded-full text-xs ${
+                className={`mb-1 inline-flex h-5 w-5 items-center justify-center rounded-full text-[11px] sm:h-6 sm:w-6 sm:text-xs ${
                   today
                     ? "bg-rose-500 font-semibold text-white"
-                    : inMonth
-                    ? "text-neutral-700"
-                    : "text-neutral-400"
+                    : "text-neutral-700"
                 }`}
               >
                 {format(day, "d")}
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-0.5 sm:gap-1">
                 {dayOccurrences.slice(0, 3).map((occ) => {
                   const meta = getEventTypeMeta(occ.type);
                   return (
@@ -210,12 +218,13 @@ export default function CalendarApp({ currentUser }: { currentUser: string }) {
                           defaultDate: new Date(occ.occurrenceDate),
                         });
                       }}
-                      className={`truncate rounded border px-1 py-0.5 text-left text-[11px] ring-1 ring-inset ${meta.color} ${
+                      className={`truncate rounded border px-1 py-0.5 text-left text-[10px] ring-1 ring-inset sm:text-[11px] ${meta.color} ${
                         USER_COLORS[occ.createdBy] ?? ""
                       }`}
                       title={`${occ.title} (${occ.createdBy})`}
                     >
-                      {meta.emoji} {occ.time ? `${occ.time} ` : ""}
+                      <span className="hidden sm:inline">{meta.emoji} </span>
+                      {occ.time ? `${occ.time} ` : ""}
                       {occ.title}
                     </button>
                   );
