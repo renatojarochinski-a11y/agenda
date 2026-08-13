@@ -192,7 +192,17 @@ export default function EventModal({
               <input
                 type="date"
                 value={date}
-                onChange={(e) => setDate(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setDate(value);
+                  if (recurrence === "WEEKLY" && value) {
+                    const [y, m, d] = value.split("-").map(Number);
+                    const weekday = new Date(y, m - 1, d).getDay();
+                    setByWeekDays((prev) =>
+                      prev.includes(weekday) ? prev : [...prev, weekday].sort()
+                    );
+                  }
+                }}
                 required
                 className="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400"
               />
@@ -240,6 +250,12 @@ export default function EventModal({
 
           {recurrence !== "NONE" && (
             <div className="space-y-3 rounded-lg border border-neutral-100 bg-neutral-50 p-3">
+              {editing && (
+                <p className="text-xs text-neutral-500">
+                  Isso é um evento recorrente: alterar aqui muda a série
+                  inteira, não só esta ocorrência.
+                </p>
+              )}
               <div className="flex items-center gap-2 text-sm text-neutral-700">
                 <span>A cada</span>
                 <input
