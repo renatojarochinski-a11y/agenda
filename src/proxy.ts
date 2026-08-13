@@ -8,6 +8,7 @@ export async function proxy(request: NextRequest) {
 
   if (
     PUBLIC_PATHS.some((p) => pathname === p) ||
+    pathname.startsWith("/api/cron/") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon")
   ) {

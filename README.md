@@ -20,6 +20,9 @@ fixo, tarefa doméstica, aniversário, outro).
   calendário.
 - Editar e excluir eventos (excluir um evento recorrente remove a série
   inteira).
+- **Notificações no WhatsApp** (opcional, via CallMeBot): quando alguém
+  cria um evento, a outra pessoa recebe uma mensagem na hora; e todo dia
+  de manhã sai um lembrete com os eventos daquele dia.
 
 ## Stack
 
@@ -87,6 +90,38 @@ fixo, tarefa doméstica, aniversário, outro).
 4. Pronto — a Vercel vai te dar um link público (ex:
    `https://agenda-renato-nicole.vercel.app`) para acessar de qualquer
    lugar, inclusive do celular.
+
+### 3. Notificações no WhatsApp (opcional)
+
+Usa o [CallMeBot](https://www.callmebot.com/blog/free-api-whatsapp-messages/),
+um serviço gratuito pra uso pessoal. **Cada pessoa (Renato e Nicole) precisa
+fazer isso separadamente, no próprio celular:**
+
+1. Salve o número **+34 613 01 49 37** nos contatos do WhatsApp (pode salvar
+   como "CallMeBot"). Se esse número não responder, confira o número atual
+   em https://www.callmebot.com/blog/free-api-whatsapp-messages/ — ele pode
+   mudar de vez em quando.
+2. Mande pra esse contato, pelo WhatsApp, a mensagem:
+   `I allow callmebot to send me messages`
+3. Em até 2 minutos o bot responde com a frase "API Activated..." e uma
+   **API Key** (um número). Guarde essa chave e o número de telefone usado
+   (com código do país, só números, ex: `5511999999999`).
+4. Repita os passos 1-3 na outra pessoa.
+
+Depois, na Vercel, em **Environment Variables**, adicione:
+
+- `RENATO_WHATSAPP_PHONE` e `RENATO_WHATSAPP_APIKEY`
+- `NICOLE_WHATSAPP_PHONE` e `NICOLE_WHATSAPP_APIKEY`
+- `CRON_SECRET` — um valor aleatório longo (gere com `openssl rand -base64 32`).
+  A Vercel usa isso automaticamente pra autenticar as chamadas do lembrete
+  diário — não precisa fazer mais nada, só cadastrar a variável.
+
+Depois de adicionar, faça um novo deploy (**Deployments → ... → Redeploy**)
+pra essas variáveis passarem a valer.
+
+O lembrete diário roda todo dia às 8h (horário de Brasília) — configurado em
+`vercel.json`. Se nenhuma variável de WhatsApp estiver configurada, o app
+funciona normalmente, só não manda as mensagens.
 
 ### Atualizações futuras
 

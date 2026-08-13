@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { expandEventsInRange } from "@/lib/recurrence";
+import { findEventsOverlapping } from "@/lib/eventsQuery";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/auth";
+import { otherUser, sendWhatsApp } from "@/lib/whatsapp";
+import { buildEventCreatedMessage } from "@/lib/notifyMessages";
 import { EventType, RecurrenceFreq } from "@prisma/client";
 
 const EVENT_TYPES = Object.values(EventType);
@@ -26,18 +29,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Datas inválidas." }, { status: 400 });
   }
 
-  const events = await prisma.event.findMany({
-    where: {
-      OR: [
-        { recurrence: "NONE", date: { gte: rangeStart, lte: rangeEnd } },
-        {
-          recurrence: { not: "NONE" },
-          date: { lte: rangeEnd },
-          OR: [{ recurrenceEnd: null }, { recurrenceEnd: { gte: rangeStart } }],
-        },
-      ],
-    },
-  });
+  const events = await findEventsOverlapping(rangeStart, rangeEnd);
 
   const occurrences = expandEventsInRange(events, rangeStart, rangeEnd).map(
     ({ event, date }) => ({
@@ -92,6 +84,8 @@ export async function POST(request: NextRequest) {
       createdBy: session.name,
     },
   });
+
+  await sendWhatsApp(otherUser(session.name), buildEventCreatedMessage(event, session.name));
 
   return NextResponse.json({ event }, { status: 201 });
 }
