@@ -9,6 +9,7 @@ import {
   type EventTypeValue,
   type RecurrenceValue,
 } from "@/lib/eventTypes";
+import { dateKeyFromISO } from "@/lib/dateKey";
 
 export interface Occurrence {
   id: string;
@@ -51,7 +52,7 @@ export default function EventModal({
   const [description, setDescription] = useState(editing?.description ?? "");
   const [type, setType] = useState<EventTypeValue>(editing?.type ?? "OUTRO");
   const [date, setDate] = useState(
-    format(editing ? new Date(editing.date) : defaultDate, "yyyy-MM-dd")
+    editing ? dateKeyFromISO(editing.date) : format(defaultDate, "yyyy-MM-dd")
   );
   const [allDay, setAllDay] = useState(editing?.allDay ?? true);
   const [time, setTime] = useState(editing?.time ?? "");
@@ -61,7 +62,7 @@ export default function EventModal({
   const [interval, setInterval] = useState(editing?.interval ?? 1);
   const [byWeekDays, setByWeekDays] = useState<number[]>(editing?.byWeekDays ?? []);
   const [recurrenceEnd, setRecurrenceEnd] = useState(
-    editing?.recurrenceEnd ? format(new Date(editing.recurrenceEnd), "yyyy-MM-dd") : ""
+    editing?.recurrenceEnd ? dateKeyFromISO(editing.recurrenceEnd) : ""
   );
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);

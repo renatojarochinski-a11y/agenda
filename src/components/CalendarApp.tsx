@@ -16,6 +16,7 @@ import {
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { getEventTypeMeta, USER_COLORS } from "@/lib/eventTypes";
+import { dateKeyFromISO } from "@/lib/dateKey";
 import EventModal, { type Occurrence } from "@/components/EventModal";
 
 const WEEKDAY_LABELS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -54,8 +55,8 @@ export default function CalendarApp({ currentUser }: { currentUser: string }) {
     setError(null);
     try {
       const params = new URLSearchParams({
-        start: gridStart.toISOString(),
-        end: gridEnd.toISOString(),
+        start: format(gridStart, "yyyy-MM-dd"),
+        end: format(gridEnd, "yyyy-MM-dd"),
       });
       const res = await fetch(`/api/events?${params}`);
       if (!res.ok) throw new Error("Falha ao carregar eventos.");
@@ -76,7 +77,7 @@ export default function CalendarApp({ currentUser }: { currentUser: string }) {
   const occurrencesByDay = useMemo(() => {
     const map = new Map<string, Occurrence[]>();
     for (const occ of occurrences) {
-      const key = format(new Date(occ.occurrenceDate), "yyyy-MM-dd");
+      const key = dateKeyFromISO(occ.occurrenceDate);
       const list = map.get(key) ?? [];
       list.push(occ);
       map.set(key, list);
