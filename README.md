@@ -67,19 +67,7 @@ fixo, tarefa doméstica, aniversário, outro).
 3. Copie também a **connection string direta** (sem `-pooler`) — essa será
    a `DIRECT_URL`, usada apenas para rodar as migrations.
 
-### 2. Aplicar as migrations no banco de produção
-
-Com o `.env` local apontando para as URLs do banco de produção (você pode
-usar um `.env.production.local` temporário), rode:
-
-```bash
-npx prisma migrate deploy
-```
-
-Isso cria as tabelas no banco de produção. Só precisa ser feito uma vez (e
-de novo sempre que o schema mudar).
-
-### 3. Publicar o projeto na Vercel
+### 2. Publicar o projeto na Vercel
 
 1. Crie uma conta em https://vercel.com e importe este repositório
    (`renatojarochinski-a11y/agenda`, branch com o código da agenda).
@@ -90,12 +78,17 @@ de novo sempre que o schema mudar).
    - `SESSION_SECRET` — um valor aleatório longo (gere com
      `openssl rand -base64 32`).
 3. Clique em **Deploy**.
+
+   O projeto tem um script `vercel-build` que roda
+   `prisma migrate deploy && next build` — ou seja, a cada deploy a Vercel
+   já aplica automaticamente as tabelas/alterações do banco antes de
+   publicar. Não é preciso rodar nada manualmente.
+
 4. Pronto — a Vercel vai te dar um link público (ex:
    `https://agenda-renato-nicole.vercel.app`) para acessar de qualquer
    lugar, inclusive do celular.
 
 ### Atualizações futuras
 
-Sempre que o `prisma/schema.prisma` mudar, rode `npx prisma migrate deploy`
-apontando para o banco de produção antes (ou depois) de publicar a nova
-versão na Vercel.
+Basta publicar a nova versão na Vercel — as migrations do
+`prisma/schema.prisma` são aplicadas automaticamente a cada deploy.
