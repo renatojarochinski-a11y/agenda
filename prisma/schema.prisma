@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum EventType {
+  FESTA
+  FIXO
+  TAREFA
+  ANIVERSARIO
+  OUTRO
+}
+
+enum RecurrenceFreq {
+  NONE
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+model Event {
+  id             String         @id @default(cuid())
+  title          String
+  description    String?
+  type           EventType      @default(OUTRO)
+  date           DateTime
+  time           String?
+  allDay         Boolean        @default(true)
+  recurrence     RecurrenceFreq @default(NONE)
+  interval       Int            @default(1)
+  byWeekDays     Int[]          @default([])
+  recurrenceEnd  DateTime?
+  createdBy      String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([date])
+}
