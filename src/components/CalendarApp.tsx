@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   addDays,
   addMonths,
@@ -118,6 +119,12 @@ export default function CalendarApp({ currentUser }: { currentUser: string }) {
           >
             + Novo evento
           </button>
+          <Link
+            href="/tibia"
+            className="rounded-lg border border-neutral-200 px-3 py-2 text-sm text-neutral-600 hover:bg-neutral-50"
+          >
+            ⏱️ Tibia
+          </Link>
           <button
             onClick={handleLogout}
             className="rounded-lg border border-neutral-200 px-3 py-2 text-sm text-neutral-600 hover:bg-neutral-50"
